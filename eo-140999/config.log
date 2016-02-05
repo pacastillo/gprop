@@ -1,0 +1,11 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:534: checking for c++
+configure:565: checking whether the C++ compiler (c++  ) works
+configure:579: c++ -o conftest    conftest.C  1>&5
+configure:599: checking whether the C++ compiler (c++  ) is a cross-compiler
+configure:604: checking whether we are using GNU C++
+configure:613: c++ -E conftest.C
+configure:628: checking whether c++ accepts -g
+configure:658: checking for ranlib

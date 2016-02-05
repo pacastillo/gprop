@@ -1,0 +1,1043 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.51 [en] (X11; I; Linux 2.2.5-15smp i686) [Netscape]">
+   <title>EO library tutorial</title>
+    <meta name=keywords value="genetic algorithms, tutorial,
+evolutionary computation, EO">
+<link HREF="c++.css" TYPE="text/css" REL="stylesheet" TITLE="Estilo para el tutorial de C++">
+<script languaje="JavaScript">
+
+var contadores= new Array;
+function multicontador(  numero ) {
+      if ( ! contadores[ numero ]  )
+          contadores[ numero ] = 1;
+      else
+          contadores[numero ]++;
+      document.write( contadores[numero] );
+};
+
+</script>
+</head>
+<body text="#000000" bgcolor="SkyBlue" link="#0000FF" vlink="#800080" background="muback1.gif">
+
+<h1>EO library tutorial</h1>
+<center>By <a href=http://kal-el.ugr.es/htbin/jj-plex>J. J. Merelo</a></center>
+
+<h2><script>multicontador("h2")</script> What's this EO stuff?</h2>
+
+<p>If you have got this document, you probably already have a copy of the
+    EO evolutionary computation library. If you don't, hurry up and
+    download it from <a
+href=http://geneura.ugr.es/~jmerelo/EO.html>the EO home page,
+http://geneura.ugr.es/~jmerelo/EO.html</a>. Follow instructions there
+to install it: it basically consists in unzipping or untarring the
+package, and issuing a <code>configure</code>  followed by a
+<code>make</code> if you are in an unixoid system, or loading a Visual 
+C++ workspace (.dsw file) if you are not. From now on, we will suppose 
+you already did that, and that the directory with this tutorial and
+the rest of the programs hang from that same directory (whose name
+will be, let's say, EO).</p>
+
+<p>Throughout this tutorial, I will suppose you are already familiar
+with evolutionary computation and with C++. If you are not, please
+take a look at one of the many excellent tutorial and FAQs available
+on the net; if you want to try a spanish tutorial, check out <a
+href=http://pagina.de/geneticos>Informática Evolutiva, at
+http://pagina.de/geneticos</a>; if you aren't, check out the EvoNet
+<a href=http://krypton.ugr.es>Flying Circus Website at, for instance,
+http://krypton.ugr.es</a>. To find your way in the C++ realm, try <a
+href=http://geneura.ugr.es/~jmerelo/c++-faq > the C++ FAQ at
+http://geneura.ugr.es/~jmerelo/c++-faq </a> or any of its mirrors.</p>
+
+<p>This tutorial needs a bit of installation, since you should be able 
+to compile and run the programs that go with it. You should have EO
+compiled in an accesible place; then, change the prefix and CXX
+variables in the Makefile to whatever values are reasonable for your
+system. If you are working with EO in a Windows environment, go to the 
+win directory, and load the EOtutorial.dsw workspace. Then you will
+have to go to the options-directories menu and change the include
+directory to point to the EO base directory and the library to point
+to the place where eoutil.lib is found.</p>
+
+<h2><script>multicontador("h2")</script> Who's interested in
+Evolutionary Computation, anyways?</h2>
+<p>Probably not you, who are in a hurry, want to just solve a problem,
+and be through with your assignment which should be due, er,
+yesterday. So, you want a ready-made genetic algorithm, and just
+program a fancy fitness function, and be done with. Let's get down,
+then, to write one.</p>
+
+<p>A fitness function basically takes a chromosome (and let's call it
+a chromosome, although you don't really need chromosomes in EO), and
+computes a number from it; it should take a chromosome as an argument
+and return a floating point number or whatever; and a chromosome will
+basically be a vector of bits. But take into account that in EO, most
+anything is an object of a class or another, so this fitness function
+will also belong to a class, the class of all fitness functions
+worldwide. This is no big deal, and at the same time it is: it just
+means your fitness function must subclass an abstract fitness
+function, but it also means that, by having objects, you can change
+the behavior of the object or the object itself in runtime. But enough 
+hype and let's get down to writing it: our fitness function will just
+count the number of ones. The full implementation of this class is in
+the file <a href=NumOnes.h>NumOnes.h</a>. Before going down to the
+code itself, let's comment on some metastuff. First, we have
+implemented the class in only one .h file, and not separated .h and
+.cpp files; in this case, this is allowed since implementation does
+not have lots of lines. Besides, there is only one class per file, and 
+the name of the file is the name of the class. This is enforced in
+Java, but in EO programming, we'll settle for a style advice.</p>
+<code><pre>
+struct NumOnes: public EOEvalFunc< Chrom > {
+  virtual float operator()(  Chrom & _eo ) const {
+    float numOnes = 0;
+    for ( unsigned i = 0; i < _eo.length(); i ++ ) 
+      numOnes += ( _eo[i] == true)?1:0 ;
+    return numOnes;
+  };
+};
+</pre></code>
+<center><table bgcolor=black cellspacing=1
+cellpadding=1 align=right width=40%><tr><td><table bgcolor=white><tr><td>
+<h3>Some thoughts on style</h3>
+EO tries to keep an uniform style throughout all its code. Some of the 
+elements of this style are:<ul>
+<li>Java-style file names: classes and files have the same name,
+including capitals, and there's only one class per file. Header
+(declaration) files have .h extension, and source (definition) files
+have .cpp; although usually all is grouped into a single .h file, à la 
+STL.</li>
+<li>Methods start with lower case, classes with upper case, parameters 
+passed to a method with an underline (_).</li>
+<li>Indentation should always be used, and braces start at the end of
+the block condition, not at the beginning of a line. If possible, use
+an editor that fixes indentation automatically, like the one
+integrated in VC++ or (x)emacs.</li>
+</ul>
+The rest can be found at <a
+href=http://geneura.ugr.es/~jmerelo/eo/Portabilityissues.html>the EO
+portability page</A>. You might have also in the local copy of the EO
+manual. Maybe you are one of those that puts style right there where
+flow charts belong; then try to modify a program or library without
+uniform style and see if it's easy to do or not.
+</td></tr></table></td></tr></table>
+</center>
+<p>Let's then analyze this class line by line. First, it is a class
+(in this case, it is declared as a struct, but that just means that,
+by default, all its members are public),
+and since it is an evaluation function, it must subclass the abstract
+class of EO evaluation functions, EOEvalFunc, which is a template
+instantiated with the tipe of EO it evaluates. This EO, called Chrom
+in this case, is a vector of bool values, or bits. </p>
+<p>Most evaluation
+functions will just need to declare the function that defines its
+interface, that is, the operator (), that allows it to be used like
+what it is, a function. This kind of objects, which have operator()
+defined and thus have function syntax, are called
+<em>functors</em>. To create new evaluation functions, you will have
+to follow this abstract interface. Take into account that the return
+value for the operator() will be the same type as the type declared as 
+fitness of the chromosome (in this case, float), and that it should
+take the chromosome EOEvalFunc has been instantiated with as an
+argument (Chrom, in this case). Variables passed as arguments to
+functions usually have an underscore as first letter in EO (this is
+another style rule).</p>
+<p>Within the function, after initialization of a variable that will
+hold the number of ones, there is only a loop that checks if the bit
+is set (true) or not, and adds one to the total number of ones if it
+is. The loop goes from 0 (the first element) to eo.length(), that
+returns the total number of bits in a chromosome, and in general, the
+total number of elements in an EO. The chromosome can be used as an
+array of bits, that is why each element of the chromosome is accessed
+using _eo[i].</p>
+<p>And that is basically it, just return the number of ones. You might 
+wonder why the fitness is a float and not an unsigned integer; and
+that is because the Simple Genetic algorithm we are going to use
+requires floating-point fitness. </p>
+<p>Then it comes the problem of inserting this fitness function into a
+Simple Genetic algorithm, as described by Goldberg. This is already
+one of the basic classes in EO, so you just have to modify a couple of 
+lines of the basic program that uses SGA,like in the program <a
+hrf=EOtutorial-ex0.cpp>EOtutorial-ex0.cpp</a>:</p> 
+<a name=ex0><code><pre>
+#include &lt;generic/EOSGA.h&gt;
+#include "SGA-getParams.h"	// For the command-line parser Parser
+<font color="DarkBrown">#include "NumOnes.h"            // Includes the fitness function object</font>
+ 
+//-----------------------------------------------------------------------------
+
+typedef EOBin&lt;float&gt; Chrom;
+typedef EOPop&lt;Chrom&gt; Pop;	// Chrom defined as EOBin&lt;float&gt;
+
+//-----------------------------------------------------------------------------
+
+main( int argc, char** argv) {
+
+<font color="DarkBrown"> const unsigned numGenes = 1</font>  // Number of genes in the chromosome
+  unsigned numBits ,             // Number of bits per gene
+    numGenerations,       // Number of generations
+    popSize;              // Population size
+  float xOverPr,      // Crossover rate, from 0 to 1
+    mutPr;            // Mutation rate, from 0 to 1
+  bool verbose;       // true if you want many things printed
+  
+  getParams( argc, argv, verbose, popSize, numBits, numGenerations,
+	     xOverPr, mutPr );  
+  Pop pop;
+<font color="DarkBrown">  NumOnes thisEvalFunc;</font>
+  EOSGA sga( thisEvalFunc, pop, popSize, numGenes, numBits, mutPr, xOverPr, 
+	     numGenerations, verbose );
+  sga( pop );
+  sort( pop.begin(), pop.end(), SortEO&lt;Chrom&gt;() ); 
+  cout &lt;&lt; "Best fitness ....... " &lt;&lt; pop[0].fitness() &lt;&lt; endl
+       &lt;&lt; "Value...............  " &lt;&lt; pop[0] &lt;&lt; endl;
+  return 0;
+}
+</pre></code></a>
+<p>All this program is pretty standard, but for the lines that have
+been highlighted with the <font color="DarkBrown">dark brown</font>
+color. The first one includes the file in which the evaluation
+function declaration and definition reside; since everthing is in that
+file, there's no need to change the Makefile afterwards. The second
+one declares the number of genes in the chromosome; in this case, we
+don't really care a lot about genes, so let's just say we have one
+with many bits (we could also say we have many with one bit); the
+number of bits will be left as a variable. Then, you have to declare
+an instance of the evaluation function object.</p>
+<pre><code>NumOnes thisEvalFunc;
+</code></pre>
+<p>The genetic algorithm must be told about all this arrangement, so
+when you declare it at </p><pre><code>
+EOSGA sga( thisEvalFunc, pop, popSize, numGenes, numBits, mutPr, xOverPr, 
+           numGenerations, verbose );
+</code></pre>
+<p>you hand the constructor all the information it needs: the
+evaluation function, the population you are going to use and its size, 
+and the rest of the parameters, including one that tells it to be
+quiet or to print lots of stuff about how the algorithm is going.<p>
+<p>The next line</p>
+<pre><code>sga( pop );
+</code></pre><p>effectively applies the algorithm to the population,
+until the said number of generations transcur. All algorithms in EO
+take the shape of <code>algorithm( population )</code>; they are, once 
+again, <em>functors</em>, which take a population, massage it, and
+return a new population, which has been evolved using the
+algorithm.</p>
+
+<p>This is the population we sort, using the standard template library 
+sort algorith, just to be sure it's sorted in decreasing order of
+fitness; then we take the best and print it along with its
+fitness. And that's it. After compiling it with <code>make
+EOtutorial-ex0</code> run it. If you don't run it in verbose mode, you 
+should obtain something like this<pre>
+[myself@localhost EO-tutorial]# EOtutorial-ex0 
+Best fitness ....... 13
+Value...............  1111111110101110
+</pre></p>
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Design an
+evaluation function class that performs the "Royal Road"
+function. What is that? Well, that's exactly a part of the
+assignment. Then write and run a program that applies a Simple Genetic 
+algorithm to minimize it.</p>
+
+<img src=deJongF2.png width=600 alt="[deJong's F2 function]"><br>
+
+ <p>In the real world, usual functions to be optimized are tougher and
+rougher than a flimsy addition of bits; usually you have to deal with
+functions with real parameters. You might still want to use a binary
+representation (you might not, of course, and EO allows you to
+choose), and you have to convert the binary values in the chromosome
+to real-valued parameters in a certain range. That's what you do in
+the following function, which is world-famous <a href=deJongF2.h>De Jong's F2 function,
+adapted to EO (deJongF2.h)</a>:</p><code><pre>
+struct deJongF2: public EOEvalFunc&lt; Chrom &gt; {
+  virtual float operator()(  Chrom & _eo ) const {
+    float ans;
+    <font color="DarkBrown">EOView&lt;float&gt; vista( _eo, 0, 1 )</font>;
+    ans = vista[0] * vista[0] - vista[1];
+    ans *= 100.0*ans;
+    ans += (1.0 - vista[0])*(1.0 - vista[0]);
+    return(ans);
+  };
+};
+</pre></code>
+<p>This function reaches its maximum in the [0,1][0,1], which is 101, when x = 0 and
+y = 1, as can be seen in the picture above. However, it is somewhat
+tricky since it has a near-maximum at [1,0], exactly on the opposite
+edge. Not-so-good algorithms will be able to find the "bad" maximum,
+but the true-blue will be able to find the good one.</p>. 
+
+<p>Up to the 3rd line, this function is pretty familiar: a struct that 
+subclasses the template EOEvalFunc instantiated to the specific type
+of EO we are working with, the usual function declaration, and
+variable declaration. Then comes the declaration of a EOView, which basically takes a binary chromosome and turns 
+it into an array of floating point values. In this case, the array has 
+two elements; the number of elements and the number of bits for each
+one will be taken from the chromosome declaration (which needs to know 
+the number of "genes" and the number of bits in each of them).</p>
+
+<p>The next lines use vista instead of _eo; this 
+vista already has precomputed the values corresponding to
+the bits in the chromosome. This way, floating-point variable
+functions can also be optimized.</p>
+
+<p>Obviously, you have to include this into a program to optimize it,
+like <a href=EOtutorial-ex1.cpp>this one (EOtutorial-ex1.cpp)</a></P>
+<code><pre>
+
+#include &lt;generic/EOSGA.h&gt;
+#include "SGA-getParams.h"	// For the command-line parser Parser
+<font color=DarkBrown>#include "deJongF2.h"</font>           // Includes the fitness function object
+ 
+//-----------------------------------------------------------------------------
+
+typedef EOBin&lt;float&gt; Chrom;
+typedef EOPop&lt;Chrom&gt; Pop;	// Chrom defined as EOBin&lt;float&gt;
+
+//-----------------------------------------------------------------------------
+
+main( int argc, char** argv) {
+
+<font color=DarkBrown>  unsigned numGenes = 2,  // Number of genes in the chromosome</font>
+    numBits ,             // Number of bits per gene
+    numGenerations,       // Number of generations
+    popSize;              // Population size
+  float xOverPr,      // Crossover rate, from 0 to 1
+    mutPr;            // Mutation rate, from 0 to 1
+  bool verbose;       // true if you want many things printed
+  
+  getParams( argc, argv, verbose, popSize, numBits, numGenerations,
+	     xOverPr, mutPr );  
+  Pop pop;
+<font color=DarkBrown>  deJongF2 thisEvalFunc;</font>
+  EOSGA sga( thisEvalFunc, pop, popSize, numGenes, numBits, mutPr, xOverPr, 
+	     numGenerations, verbose );
+  sga( pop );
+  sort( pop.begin(), pop.end(), SortEO&lt;Chrom&gt;() ); 
+  cout << "Best fitness ....... " << pop[0].fitness() << endl
+       << "Value...............  " << pop[0] << endl;
+  return 0;
+}
+</pre></code>
+<p> which is basically the same as the <a href=#ex0>previous
+example</a>, except for the highlited lines; these lines just declare
+and use the new function. In this case, the function is maximized, as
+usually happens in EO. In this case, after compiling it with <pre>
+[myself@localhost EO-tutorial]# make EOtutorial-ex1
+</pre> you can run it, and you will obtain something like this<pre>
+[myself@localhost EO-tutorial]# EOtutorial-ex1
+Best fitness ....... 88.7838
+Value...............  00110000110111011111100110100110
+</pre></p>
+
+<p> You can also try several options, since command line parameter
+interpretation is already embedded into the program. For instance, you 
+could use less bits and more generations, to see if you obtain a
+better result:<pre>
+[myself@localhost EO-tutorial]# EOtutorial-ex1 -nb 12 -g 200
+Best fitness ....... 100.073
+Value...............  000000000010111111101100
+</pre>. The full range of options is available if you write<pre>
+[myself@localhost EO-tutorial]# EOtutorial-ex1 -h           
+EOtutorial-ex:
+	Demo of a Simple Genetic algorithms a la Holland
+Usage: 
+EOtutorial-ex [-v] [-h] [-g value0] [-p value1] [-x value2] [-m value3] [-nb value4] 
+
+Where:
+-v,--verbose:
+	Verbosely print all things during evolution
+-h,--help:
+	Shows this help
+-g,--generations:
+	(Integer) Optional. By default: 20
+	Number of generations the GA will be run
+-p,--popsize:
+	(Integer) Optional. By default: 20
+	Number of EOs in the population
+-x,--xover:
+	(Float) Optional. By default: 0.8
+	Crossover rate or priority
+-m,--mutation:
+	(Float) Optional. By default: 0.2
+	Mutation rate or priority
+-nb,--numbits:
+	(Integer) Optional. By default: 16
+	Chromosome/EO length
+</pre>
+
+
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Design an
+evaluation function class that minimizes Riolo's function. Where can I 
+get that function? you wonder. Wellll... that's also part of the
+assignment.</p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Tweak the genetic
+algorithm parameters, and try to come up with the best solution for a
+fixed number of bits, generations and population. Try a different set
+of bits, generations and population and check if the same parameter
+values also yield the best result. </p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Run the algorithm
+verbosely, extract the best fitness in each generation, and plot
+it. Use it to find the correct number of generations. </p>
+
+<h2><script>multicontador("h2")</script> Who put the chromosomes in
+the population?</h2>
+
+<p> Once you're done with your project, you finish your degree in
+Advanced Indeterminate Studies, and set down to write your Master
+thesis. To write another fitness function would be too easy, so, why
+not write a whole genetic algorithm? Why not, even, change the type of 
+the chromosome? And that's what you try to do with EO.</p>
+
+<p>In general, almost anything can be a chromosome in EO, if you can
+define a fitness to it, and this fitness can be compared. Most
+evolving objects, however, are linear arrays of things, like bits or
+real numbers. In this case, we will try to evolve arrays of real
+numbers. We can define a chromosome this way:</p><pre><code>
+typedef EOVector<float,float> Chrom;
+</code></pre>
+<P>A chromosome in this case, is a double vector, instantiated with
+the type of each element in the chromosome (float) and the type of the 
+fitness (float also). It could be </p><pre><code>
+typedef EOVector<int,float> Chrom;
+</code></pre>
+<P>if we had EO with int components, and with a float fitness. And
+this is the easy part: since we are not using bitstrings to evolve, we 
+can't use the canonical SGA, and we have to make do with an Easy GA
+(EOEasyGA), but in this case we have to break down the algorithm in
+its components, and define each of them.</p>
+
+<p>Which are these components? Well, a evolutionary algorithm goes
+this way:</p> <ol>
+<li>Create the population</li>
+<li>Initialize the population, and evaluate it</li>
+<li>While the termination condition is not met:<ol>
+    <li>Choose the part of the population that is going to reproduce.</li>
+    <li>Mate them with each other.</li>
+    <li>Elminate some of them, substituting them by the results of the 
+previous step.</li>
+    <li>Evaluate the new members of the population. </li>
+    </ol>
+</ol>
+<p>In EO, each of these steps is performed by a different class of
+objects, and at the same time, the third step is performed by objects
+of the type EOAlgo. An EOAlgo that performs an evolutionary algorithm
+takes objects that breed, mate, and eliminate members of the
+population. The whole algorithm can be contemplated in <a
+href=EOtutorial-ex2.cpp>the example EOtutorial-ex2.cpp</a>. Those
+steps are performed in this lines of code</p><code> <pre>
+  deJongF2float thisEvalFunc;
+  EOEvalAll&lt;Chrom&gt;  eval( thisEvalFunc) ;
+  EOLottery&lt;Chrom&gt; select;
+  EORandomBreed&lt;Chrom&gt; breed;
+  EOElimAll&lt;Chrom&gt; replace;
+  EOGenTerm&lt;Chrom&gt; term( numGenerations );
+</pre></code><p>This lines first declare an object of type
+<a href=deJohgF2float.h>deJongF2float</a>, which is similar to the
+function we dealt with before, but uses arrays of floats instead of
+bits; then defines an evaluator for the whole population from an evaluation function
+object (thisEvalFunc); then an object which will select the pool that
+will be reproduce, of type EOLottery, which does so using a modified
+version of Roulette wheel which assigns probability of reproduction
+depending on fitness; the next object just takes the members of the
+pool randomly and applies genetic operators to them, including mating; 
+them the grim reaper (replace) eliminates all the population,
+substituting it by the newly created, and finally, the terminator term 
+makes the evolutionary algorithm finish after a certain number of
+generations.</p>
+
+<p>Those are basically population-level operators; they generally take 
+a group of EOs and create another, according to some rules. They are
+pretty generic, and theoretically should be independent of the type of 
+chromosome they work with; in fact, they are templates instantiated
+with the type of the chromosome they work with. Most of them only need 
+the chromosome to have a copy ctor, and of course, a fitness which is
+comparable (and in some cases, like in EOLottery, a fitness that can
+be casted to a float).</p>
+
+<p>Some more work needs to be done before applying the algorithm
+(which, by the way, has not been defined so far), and that is defining 
+the genetic operators we are going to apply and add them to the object 
+that applies them, breed. That is done is this chunk of
+code<p><code><pre>
+  EOFloatArrayRndMutate&lt;Chrom&gt; rndMut( 0.1, mutPr );
+  EOXOver2&lt;Chrom&gt; xOver(xOverPr); 
+  breed.addOp( &rndMut );
+  breed.addOp( &xOver );
+</pre></code>
+<p>Usually nothing more than a mutation-like operator and a crossover
+are needed, that is, a diversity-increment operator (mutation) and a
+diversity-reduction binary operator (crossover). In this case,
+mutation is a operator that is already included in EO, and that adds
+or substract an uniform random value with maximum 0.1. They also take
+a probability of application, mutPr and xOverPtr as parameters, and
+are finally added to breed, which has no genetic operator by
+default.</p>
+
+<p>Finally, the evolutionary algorithm object, that will be applied to 
+the population, must be defined and effectively applied</p><code><pre>
+  EOEasyGA&lt;Chrom&gt; ga( eval, select, breed, term, replace, verbose );  
+  eval( pop );
+  ga( pop );
+</pre></code>
+<p>An object called ga, which is a functor that applied an
+evolutionary algorithm is created, and this algorithm takes as
+parameters the rest of the sub-algorithms defined so far. These
+objects can be changed, even in runtime, allowing to run a possibly
+unlimited number of evolutionary algorithms. And if you don't like the 
+structure of the current algorithms, just define your own: an
+algorithm just has to take in a population, and do things on it.</p>
+
+<p>Then try and compile and run the program, like this</p><pre>
+[myself@localhost EO-tutorial]# make EOtutorial-ex2
+g++    -I/myself/oldEO -g -Wall -L/myself/oldEO/util EOtutorial-ex2.cpp -o EOtutorial-ex2 ex2-getParams.o -lEOutil -lm
+[myself@localhost EO-tutorial]# EOtutorial-ex2
+Best fitness ....... 121.111
+Value...............  -0.0071887 1.09594  ID -> 
+</pre><p>We have obtained better results than before, but that's not
+surprising, since the winning chromosome (in this case and in many
+others) is "breaking the rules": it is not between the intended range
+[0,1], and even your supervisor might notice that. That is because,
+when mutating a chromosome, we just add or 
+substract random numbers, without caring about the range. But we will
+have to do it; in many cases, the values of a chromosome must meet
+some constraint, and the best way to enforce this is to make sure
+mutation operators create new values that meet the rules. Thus, we
+will create a "ranged" mutation operator.</p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Using one of the
+current EO chromosomes: EOBin, EOVector, and EOESChrom, design a
+chromosome for the Travelling Salesman Problem. Write also a fitness
+function that works on that chromosome. </p>
+
+<p>Well, we were left in the last paragraph with the incredible task
+of creating a new mutation operator. In this case, we don't have to
+work from scratch, because we have already an example, the mutation
+operator we want to modify. We'll work on that one, and modify it to
+suit our needs, although we could also subclass it and modify slightly 
+its behavior.</p>
+
+<p>In this case, and in many others, you have to follow the 
+interface EO provides. C++ has no interfaces per se, as does Objective 
+C or Java, but you can simulate them using pure virtual classes. All
+pure virtual classes are in the ADT subdirectory of the EO
+distribution, and in this case you have to look for the EOOp.h heade
+file which contains the abstract data type for unary, binary and n-ary 
+genetic operators. In this case, it is a binary operator, and you have 
+to redefine just two methods: operator () and applyAt. And here's a
+way of doing it (which is saved in <a href=EORangeMutate.h>EORangeMutate.h</a>):<p><code><pre>
+#include &lt;ADT/EOOp.h&gt;
+template&lt;class EOT&gt;
+class EORangeMutate: public MonOp&lt;EOT&gt;{
+
+#ifdef _MSC_VER
+  typedef EOT::EOType EOType;
+#else
+  typedef typename EOT::EOType EOType;
+#endif
+
+ public:
+
+  EORangeMutate(  EOType _mutRange, EOType _lowerBound, 
+		  EOType _upperBound, float _priority = 1):
+    MonOp&lt;EOT&gt;( _priority ), range( _mutRange ), lowerBound (_lowerBound), 
+    upperBound( _upperBound )  {};
+  
+  virtual ~EORangeMutate() {};
+  
+  virtual void operator()( EOT& _eo ) const {
+    unsigned length=_eo.length();
+    for ( unsigned i=0; i&lt;length; i++ ) { 
+      applyAt( _eo, i );
+    } 
+  }
+  
+  virtual void applyAt( EOT& _eo, 
+			unsigned _i, unsigned _j=0 ) const {
+    EOType tmpC1 = _eo.readGene( _i );
+    Uniform&lt;EOType&gt; uniform( 0, range*2);
+    tmpC1 +=  uniform() - range;
+    tmpC1 = ( tmpC1 &gt; upperBound )?upperBound:tmpC1;
+    tmpC1 = ( tmpC1 &lt; lowerBound )?lowerBound:tmpC1;
+    _eo.writeGene( _i, tmpC1 );
+  }
+ private:
+  EOType range, lowerBound, upperBound;
+
+  /// Empty ctor does not make much sense
+  EORangeMutate() {};
+
+}; 
+</pre></code>
+<p>After including the correct header file, the operator is declared
+as a template of the kind of chromosome it is applied to. Most classes 
+in EO are templates of the chromosome, which allows to make them
+generic (although not universal). Furthermore, the type of each
+element in the chromosome is extracted in the</p> <pre>
+#ifdef _MSC_VER
+  typedef EOT::EOType EOType;
+#else
+  typedef typename EOT::EOType EOType;
+#endif
+</pre>
+<p>part, which may look weird, but must be written that way to work
+correctly in each compiler. The other type used to instantiate a
+chromosome, the fitness, can be extracted in a similar way. In order
+to instantiate the template, that type should have the arithmetic
+operations -, *, + and comparison operators, &lt; and &gt;. It will
+not work universally, but it will do with most reasonable scalar
+types.</p>
+
+<p>The constructor and destructor are pretty universal: the
+constructor initializes instance variables and superclasses, and
+destructor is empty, but virtual, since base class has also a virtual
+constructor. </p>
+
+<p>The operator () basically forwards the operation to the other
+method: applyAt, for each element. This is the method that really does 
+the thing, and it is quite similar to the one it is bases in, except
+for the fact that, if the number obtained exceeds the bound, it is put 
+back again in those bounds</p>
+
+<p>Finally, that new operator must be used within <a
+href=EOtutorial-ex3.cpp>a program (EOTutorial-ex3.cpp)</a><code><pre>
+
+#include &lt;generic/EOGOps.h&gt;
+#include &lt;generic/EOEvalAll.h&gt;
+#include &lt;generic/EOselect/EOLottery.h&gt;
+#include &lt;generic/EOselect/EORandomBreed.h&gt;
+#include &lt;generic/EOGenTerm.h&gt;
+#include &lt;generic/EOEasyGA.h&gt;
+<font color=darkbrown>#include "EORangeMutate.h"</font>
+#include &lt;util/Uniform.h&gt;
+#include "ex2-getParams.h"	// For the command-line parser Parser
+#include "deJongF2float.h"           // Includes the fitness function object
+
+typedef EOVector&lt;float,float&gt; Chrom;
+typedef EOPop&lt;Chrom&gt; Pop;	// Chrom defined as EOBin&lt;float&gt;
+
+main( int argc, char** argv) {
+  unsigned numGenes = 2,  // Number of genes in the chromosome
+    numGenerations,       // Number of generations
+    popSize;              // Population size
+  float xOverPr,      // Crossover rate, from 0 to 1
+    mutPr;            // Mutation rate, from 0 to 1
+  bool verbose;       // true if you want many things printed
+  getParams( argc, argv, verbose, popSize, numGenerations,
+	     xOverPr, mutPr );  
+  Pop pop;
+  unsigned i, j;
+  Uniform&lt;float&gt; u( 0, 1);
+  for ( j = 0; j &lt; popSize; j ++ ) {
+    Chrom* aChrom = new Chrom;	
+    for ( i = 0; i &lt; numGenes; i ++ ) {
+      aChrom-&gt;push_back( u() );
+    }
+    pop.push_back( *aChrom );	  
+    if ( verbose ) {
+      copy( aChrom-&gt;begin(), aChrom-&gt;end(), ostream_iterator&lt;int&gt;( cout, " ") );
+      cout &lt;&lt; endl;
+    }
+    delete aChrom;    
+  }
+  deJongF2float thisEvalFunc;
+  EOEvalAll&lt;Chrom&gt;  eval( thisEvalFunc) ;
+  EOLottery&lt;Chrom&gt; select;
+  EORandomBreed&lt;Chrom&gt; breed;
+  EOElimAll&lt;Chrom&gt; replace;
+  EOGenTerm&lt;Chrom&gt; term( numGenerations );
+<font color=darkbrown>  EORangeMutate&lt;Chrom&gt; rndMut( 0.1, 0, 1, mutPr );</font>
+  EOXOver2&lt;Chrom&gt; xOver(xOverPr); 
+  breed.addOp( &rndMut );
+  breed.addOp( &xOver );
+  EOEasyGA&lt;Chrom&gt; ga( eval, select, breed, term, replace, verbose );  
+  eval( pop );
+  ga( pop );
+  sort( pop.begin(), pop.end(), SortEO&lt;Chrom&gt;() ); 
+  cout &lt;&lt; "Best fitness ....... " &lt;&lt; pop[0].fitness() &lt;&lt; endl
+       &lt;&lt; "Value...............  " &lt;&lt; pop[0] &lt;&lt; endl;
+  return 0;
+}
+</pre></CODE>
+<p>There have been only a couple of changes: the include of the header 
+file, and the change of the declaration of the mutation object. As you 
+can see, this new operator becomes a fully-featured EO operator,
+withouth more more work than following the EO interfaces. Finally,
+compile and run it<pre>
+[myself@localhost EO-tutorial]# make EOtutorial-ex3
+g++    -I/myself/oldEO -g -Wall -L/myself/oldEO/util EOtutorial-ex3.cpp -o EOtutorial-ex3 ex2-getParams.o -lEOutil -lm
+[myself@localhost EO-tutorial]# EOtutorial-ex3
+Best fitness ....... 100.73
+Value...............  0.0321474 1  ID -> 
+[myself@localhost EO-tutorial]# EOtutorial-ex3
+Best fitness ....... 91.3924
+Value...............  0.0461561 0.953354  ID -> 
+[myself@localhost EO-tutorial]# EOtutorial-ex3
+Best fitness ....... 101
+Value...............  0 1  ID -> 
+</pre>which is finally able, in three runs, to find the true
+optimum. This also proves one of the base hypothesis for EO: use the
+right tools for each problem, the operators you need, and the
+chromosome most suited to your needs.</p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Once you have
+designed a chromosome for the travelling salesman problem, design a
+couple of genetic operators, mainly binary, for it. Create a whole
+program that runs it, including fitness function and all.</p>
+
+<h2><script>multicontador("h2")</script> Off the troden path</h2>
+
+<p>Once your master thesis entitled "Creating a brand-new operator nobody 
+ever heard of for evolutionary algorithms" was finished, you go ahead
+and try to change new algorithms, to tweak evolution to the max to
+obtain the best result in a minimal amount of time and resources. So
+you decide not to use the simple genetic algorithm, and try new
+reproduction strategies.</p>
+
+<p>First thing you can try is to use different population-level
+operators (you already tried new genetic operators in the previous
+section). For instance, tournament selection (which picks up randomly
+several members of the population, and takes the best to the
+reproduction pool). Or eliminate only the worst guys, instead of
+substituting the whole population by its offspring. And that's what
+you do in <a href=EOtutorial-ex4.cpp>the next example
+(EOtutorial-ex4.cpp)</a></p>
+<code><pre>
+<font color=DarkBrown>#include &lt;EOGeneric.h&gt;	//Include for all generic classes</font>
+#include &lt;util/Uniform.h&gt;
+
+#include "EORangeMutate.h"
+#include "ex4-getParams.h"	// For the command-line parser Parser
+#include "deJongF2float.h"	// Includes the fitness function object
+typedef EOVector&lt;float,float&gt; Chrom;
+typedef EOPop&lt;Chrom&gt; Pop;	// Chrom defined as EOBin&lt;float&gt;
+main( int argc, char** argv) {
+  unsigned numGenes = 2,  // Number of genes in the chromosome
+    numGenerations,       // Number of generations
+    popSize,              // Population size
+    <font color=DarkBrown>tournamentSize;       // Tournament size</font>
+  float xOverPr,      // Crossover rate, from 0 to 1
+    mutPr;            // Mutation rate, from 0 to 1
+  bool verbose;       // true if you want many things printed
+   <font color=DarkBrown>getParams( argc, argv, verbose, popSize, numGenerations,
+	     xOverPr, mutPr, tournamentSize );</font>  
+  Pop pop;
+  /* Population generation -- skipped */
+  deJongF2float thisEvalFunc;
+  EOEvalAll&lt;Chrom&gt;  eval( thisEvalFunc) ;
+  <font color=DarkBrown>EOTournament&lt;Chrom&gt; select( tournamentSize );
+  EORank&lt;Chrom&gt; breed( popSize/ tournamentSize );
+  EOElimWorst&lt;Chrom&gt; replace( float(tournamentSize)/popSize );</font>
+  EOGenTerm&lt;Chrom&gt; term( numGenerations );
+  EORangeMutate&lt;Chrom&gt; rndMut( 0.1, 0, 1, mutPr );
+  EOXOver2&lt;Chrom&gt; xOver(xOverPr); 
+  breed.addOp( &rndMut );
+  breed.addOp( &xOver );
+  EOEasyGA&lt;Chrom&gt; ga( eval, select, breed, term, replace, verbose );  
+  <font color=DarkBrown>try {
+    eval( pop );
+    ga( pop );
+  } catch (exception& _e ) {
+    cerr << "Panic! --> " << _e.what() << endl;
+  }</font>
+  sort( pop.begin(), pop.end(), SortEO&lt;Chrom&gt;() ); 
+  cout <<"Best fitness ....... " << pop[0].fitness() << endl
+       << "Value...............  " << pop[0] << endl;
+  return 0;
+}
+
+
+</pre></code>
+
+<p>There haven't been many changes this time, but the changes have
+been significative. First of all, instead of including individual
+header files, we include the generic EOGeneric.h header file for all
+"generic" classes in EO. These classes are intended for a wide range
+of problems in EO, and include most population-level operators.</p>
+
+<p>Then, a new variable which contains the tournament size, has been
+added, and the function that parses the command line was also changed
+to include this new variable.</p>
+
+<p> Then, we use three different selection, reproduction and
+replacement operators. Generally, you have to define all of them:
+there are no defaults, and you only have to be careful that the
+population stays with the same size (if that is what you want, of
+course). That is why the first operators creates a pool with size half 
+the original population (if the value of the tournament size is left
+as default), the second one mates and changes them creating another
+pool of the same size, and the third one eliminates half the
+population, substituting them by the newly generated offspring. </p>
+
+<p>The rest of the program has only a small change: instead of calling 
+the algorithm directly, it does so within a try clause. This is only
+to be careful: some things could go wrong, and it's better to know
+what happens than helplessly stare at a coredump.</p>
+
+<p>As usual, compile and run it, and you should obtain something like
+this:</p><pre>
+[myself@localhost EO-tutorial]# make EOtutorial-ex4
+g++    -I/myself/oldEO -g -Wall -L/myself/oldEO/util EOtutorial-ex4.cpp -o EOtutorial-ex4 ex4-getParams.o -lEOutil -lm
+[myself@localhost EO-tutorial]# EOtutorial-ex4 
+Best fitness ....... 100
+Value...............  1 0  ID -> 
+</pre>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> On your previous
+TSP assignment, try different reproduction, replacement and selection
+strategies, and note which one is the best.</p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> One of the biggest
+problems in genetic algorithms is inbreeding, when the population ends 
+up invades by a group of highly fit individuals, and it no longer
+improves. That's usually avoided by balancing exploitation and
+exploration. Try to change rates of the mutation operator and
+crossover operator, the size of the tournament and population size
+and take down how many generations does it take the population  become
+stagnated</p>
+
+<h2><script>multicontador("h2")</script> The A in GA</h2>
+
+<p>Your supervisor tells you that a couple of changes is not enough
+for a PhD, that you have to create a new algorithm. And you remember
+that yous spent last holidays in the Canary island, and decide to do
+an Island GA. And precisely what is an Island GA, your supervisor
+asks? You decide not to answer, and set down to do an algorithm with
+many islands of population, with migrations from one island to
+another. Maybe something <a href=EOIslandGA.h>like this
+(EOIslandGA.h)</a>.</p>
+<code><pre>
+template&lt;class EOT&gt;
+class EOIslandGA: public EOAlgo&LT;EOT&GT; {
+ public:
+  
+  EOIslandGA( EOEasyGen&LT;EOT&GT;&  _generation,
+	      EOTerm&LT;EOT&GT;& _term,
+	      const EOPop&LT;EOT&GT; _initPop, 
+	      bool _verbose = false,
+	      unsigned _numPops = 2,
+	      unsigned _genToMigration = 10,
+	      float _percMigration = 0.1f)
+    :EOAlgo&LT;EOT&GT;(), 
+    generation( _generation ), 
+    term( _term ), verbose( _verbose ), numPops( _numPops ),
+    genToMigration( _genToMigration), percMigration( _percMigration ) {} ;
+
+  <span name=span1>virtual void operator() ( EOPop&LT;EOT&GT;& _pop ) {
+
+    vector&lt; EOPop&lt;EOT&gt; &gt; popVector(numPops);    // Set of populations
+    unsigned i, j;
+
+    EOPop&LT;EOT&GT; tmpPop = _pop;
+    for (  i = 0; i < _pop.size()/numPops; i ++ ) {
+      for (  j = 0; j < numPops; j ++ ) {
+	Uniform&lt;unsigned&gt; u (0,tmpPop.size() );
+	unsigned rnd = u();
+	popVector[j].push_back( tmpPop[rnd] );
+	tmpPop.erase( tmpPop.begin()+rnd);
+      }
+    }
+   </span>
+    EOGenTerm&LT;EOT&GT; syncGen( genToMigration);
+    do {
+      for ( i = 0; i < popVector.size(); i ++ ) {
+	do {
+	  generation( popVector[i] );
+	} while ( syncGen( popVector[i] ) );
+      }
+      
+      EOElimWorst&LT;EOT&GT; migrate( percMigration );
+      for ( unsigned i = 0; i < popVector.size() -1; i ++ ) {
+	migrate( popVector[i], popVector[i+1]);
+      }
+      migrate( popVector[popVector.size()-1],popVector[0] );
+    } while( term( popVector[0] ) ); // dummy arg
+    
+    _pop.erase( _pop.begin(), _pop.end() );
+    for ( i = 0; i < popVector.size(); i ++ ) {
+      _pop.insert(_pop.begin(), popVector[i].begin(), popVector[i].end() );
+    }
+
+  };
+
+private:
+  EOEasyGen&LT;EOT&GT; generation;
+  EOTerm&LT;EOT&GT;& term;
+  bool verbose;
+  unsigned numPops;
+  unsigned genToMigration;
+  float percMigration;
+};
+
+</pre></code>
+<p> This is a rather longish code (and even longer in the original),
+but, what the heck, it's a completely spanking brand new algorithm!
+Let's go first to the formalism: an algorithm is an algorithm, and
+thus it should subclass EOAlgo; if possible, it should also be made a
+template. Subclassing EOAlgo is no big deal: it just mean defining an
+operator() that takes a population as an argument, modifies it, and
+returns it within the same variable. In the constructor, it takes an
+argument of type EOEasyGen, which is a single generation of a genetic
+algorithm. This class subclasses EOAlgo also, since it defines
+operator()( EOPop&), but stops after executing a single generation.</p>
+
+<p>Then, what this algorithm does is the following: keeps a vector of
+populations (each one of them an <em>island</em>), which evolve
+separately. After a number of generations <em>genToMigration</em>, a
+percentage of the population <em>percMigration</em> migrates from one
+population to the next; the best in one population substitutes the
+worst in the next population (which are placed in a ring, that is, the 
+last population sends individuals to the first).</p>
+
+<p>The operator() does basically what follows:<ul>
+<li>First, split the population in the subpopulations, which is done
+in the first loop by creating an auxiliar variable, tmpPop.</li>
+<li>Create a terminator, syncGen, which allows each population to
+evolve until genToMigration generations have passed, and allow each
+subpopulation evolve to that point.</li>
+<li>Perform migration in the second part of the loop, using also the
+EOElimWorst class, which takes the best of its first argument, puts
+them in the second argument, eliminating the worst.</li>
+<li>Merge the subpopulations into only one population, which is
+assigned to the argument</li>
+</ul>
+<p>This algorithm must be included within the program, and, luckily,
+not many changes are needed. And <a
+href=EOtutorial-ex5.cpp>voilà (EOtutorial-ex5.cpp)</a></p>
+<code><pre>
+// Specific ex4 includes
+#include "EORangeMutate.h"	// For the newly defined operator	
+<font color=DarkBrown>#include "IslandGA-getParams.h"	// For the command-line parser Parser</font>
+#include "deJongF2float.h"	// Includes the fitness function object
+<font color=DarkBrown>#include "EOIslandGA.h"</font>
+
+// Typedefs go here
+
+main( int argc, char** argv) {
+
+  unsigned numGenes = 2,  // Number of genes in the chromosome
+    numGenerations,       // Number of generations
+    popSize,              // Population size
+    subPopulations,       // Number of subpopulations
+    tournamentSize,       // Tournament size
+<font color=DarkBrown>    genToMigration;       // generations until migration
+  float migrationPerc,    // percentage of migrators </font>
+    xOverPr,              // Crossover rate, from 0 to 1
+    mutPr;                // Mutation rate, from 0 to 1
+  bool verbose;           // true if you want many things printed
+  
+  // Obtain command line parameters or default values
+<font color=DarkBrown>  getParams( argc, argv,  mutPr, subPopulations, 
+             tournamentSize, popSize, migrationPerc, verbose, xOverPr, 
+             genToMigration, numGenerations);</font>
+  Pop pop;
+  unsigned i, j;
+  Uniform&lt;float&gt; u( 0, 1);
+  for ( j = 0; j < popSize; j ++ ) {
+    Chrom* aChrom = new Chrom;	
+    for ( i = 0; i < numGenes; i ++ ) {
+      aChrom->push_back( u() );
+    }
+    pop.push_back( *aChrom );	  
+    if ( verbose ) {
+      copy( aChrom->begin(), aChrom->end(), ostream_iterator&lt;int&gt;( cout, " ") );
+      cout << endl;
+    }
+    delete aChrom;    
+  }
+  deJongF2float thisEvalFunc;
+  EOEvalAll&lt;Chrom&gt;  eval( thisEvalFunc) ;
+  EOTournament&lt;Chrom&gt; select( tournamentSize );
+  EORank&lt;Chrom&gt; breed( popSize/ tournamentSize );
+  EOElimWorst&lt;Chrom&gt; replace( float(tournamentSize)/popSize );
+  EOGenTerm&lt;Chrom&gt; term( numGenerations );
+  EORangeMutate&lt;Chrom&gt; rndMut( 0.1, 0, 1, mutPr );
+  EOXOver2&lt;Chrom&gt; xOver(xOverPr); 
+  breed.addOp( &rndMut );
+  breed.addOp( &xOver );
+<font color=DarkBrown>  EOEasyGen&lt;Chrom&gt; gen( eval, select, breed, replace, verbose );  
+  eval( pop );
+  EOIslandGA&lt;Chrom&gt; islandGA(  gen, term, verbose, subPopulations, 
+			             genToMigration, migrationPerc );
+  try {
+    islandGA( pop );  </font>
+  } catch (exception& _e ) {
+    cerr << "Panic! --> " << _e.what() << endl;
+  }
+  sort( pop.begin(), pop.end(), SortEO&lt;Chrom&gt;() ); 
+  // print results
+}
+</pre></code>
+<p>Again, not very many changes; since interfaces to algorithms and
+the rest of the stuff are uniform in EO, normally you have to change
+only the name of the classes. At the beginning, the new header files
+are included. In this case, the IslandGA-getParams files have been
+generated from this file <a href=IslandGA.vars>IslandGA.vars</a>:</p><pre>
+Program that tests an IslandGA 
+unsigned	numGenerations	20	Number of generations
+unsigned    	popSize         20	Population size
+unsigned	tournamentSize  2       Tournament size
+unsigned 	genToMigration  10      Generations until migration
+unsigned 	subPopulations  2	Number of subpopulations
+float   migrationPerc  	0.1     Percentage of migrators 
+float   xOverPr         0.8	Crossover rate, from 0 to 1
+float   mutPr		0.2     Mutation rate, from 0 to 1
+bool 	verbose         false 	true if you want many things printed
+</pre><p> by using the genParse.pl script, which is included in the /util 
+directory of the EO distribution.Not a big deal, but at least saves
+you some time writing different, but similar, parsing functions for
+each program you write. That file is written from the variable
+declaration, at the beginning of the program, and then the function
+called later on, with the new variables.</p>
+<p>Other than that, instead of defining a single algorithm, we define
+two: a EOEasyGen, which performs a single generation of an algorithm
+(indeed, what EOEasyGA does is to build an EOEasyGen inside and call it, just
+check out the source code), which is then handled to the EOIslandGA
+object. The rest is the same: just sort the population (which will be
+sorted in this case, but might not be sorted with other replacement
+strategies) and print the best.</p>
+<p>As usual, compile and run it</p><pre>
+[myself@localhost EO-tutorial]# make EOtutorial-ex5
+g++    -I/myself/oldEO -g -Wall -L/myself/oldEO/util EOtutorial-ex5.cpp -o EOtutorial-ex5 IslandGA-getParams.o -lEOutil -lm
+[myself@localhost EO-tutorial]# EOtutorial-ex5
+Best fitness ....... 101
+Value...............  0 1  ID -> 
+</pre>
+<p>This seems to be the best solution so far: most times, it's able to
+find the optimum. You've reached the zen of genetic algorithms. To
+prove it, do the assignments!</p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Run each one of the 
+examples we have done so far, and compute the average optimum found
+with standard deviation. Conclude which one is the best.</p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Instead of using
+EOGenTerm, use EOFitTerm to make the algorithms finish when best
+fitness has reached a value; compute then the average number of
+generations needed to find that optimum for the different versions of
+the algorithm (from ex1 to ex5).
+</p>
+
+<p class=ejercicio><b>Assignment
+#<script>multicontador("ejercicio")</script>: </b> Program all classes 
+needed to do Fogel's Evolutionary Programming with EO. Then, send them 
+to the author, please, to include them within EO. 
+</p>
+<hr>
+</body>
+</html>

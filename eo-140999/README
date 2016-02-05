@@ -1,0 +1,52 @@
+              EO Evolutionary Computation Framework and Library
+
+EO is a toolbox for evolutionary computation which defines interfaces for
+many classes of algorithms used in evolutionary computation, and, at the
+same time, provides some examples that use those interfaces. The client/user
+can use those objects, or create their own. If new objects are created, the
+GeNeura team commit themselves to test them, and make them available to the
+Evolutionary Computation community. In this way, no changes have to be made
+to the library or the program: just new classes added.
+EO uses STL, and uses ANSI C++. So far, it's been tested and works with gcc
+2.8.1 and egcs 1.0.2 in Linux, Irix, Win95/NT (with Cygwin) and Solaris
+Machines, and with Visual C++ 5.0. Makefiles for Unix and project files for
+NT are provided.
+To start and use it, just type
+bash$ configure --prefix=<current eo directory>
+bash$ make
+This makes the object and library files needed, makes the examples in the
+examples directory, and builds the genetic mastermind application. Then, to
+unzip the documentation
+bash$ make docunzip
+which unzips the HTML documentation into the doc directory.
+If you have got any problem, write to any of the addresses below, or just do
+
+bash$ make bug-report
+and tell us your problem, indicating eo release, the C++ compiler you are
+using, and the platform.
+The latest versions of EO are always available from
+http://etcpc8.ugr.es/~jmerelo/eo and ftp://etcpc8.ugr.es/pub/eo.
+
+  ------------------------------------------------------------------------
+
+For a quick dive into the eo library, check the SGA
+Then go ahead to the EasyGA, which is a more flexible implementation of a
+Genetic Algorithm.
+Then, why not, see how EO implements Simulated Annealing.
+  ------------------------------------------------------------------------
+
+If you have uncompressed the docs, all this is in your doc directory
+  ------------------------------------------------------------------------
+
+If you have any problem, have created a new class, or just want to tell us
+something, write to eo@kal-el.ugr.es. The eo mailing list is
+eodev@kal-el.ugr.es, send an e-mail to j@kal-el.ugr.es if you want to join.
+
+  ------------------------------------------------------------------------
+Legal Stuff
+
+EO is free and free distribution; however, if you include parts of EO in a
+commercial product, you have to request authorization from us.
+The usual things apply too. If it does not work, if your wife or dogs
+abandons you, or your room humector stops working, it's not our fault.
+

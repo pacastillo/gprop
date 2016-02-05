@@ -1,0 +1,33 @@
+code {
+      background-color: #ffffA0;
+      border-width: 1pt;
+      border-style: solid;
+      padding: 5;
+      margin-left: 10%;
+      margin-right:10%
+}
+
+p {
+	font-family:sans-serif;
+	margin-left: 5%;
+}
+
+.ejercicio {
+      font-style: italic;
+      background-color: lightBlue;
+      border-width: 1;
+      padding: 5;
+      margin-left: 10%;
+      margin-right:10%
+}	
+
+H1 {
+  font-family: sans-serif;
+  font-size: 20pt;
+  text-align: center;
+}
+
+H2 {
+  text-align: center;
+}
+

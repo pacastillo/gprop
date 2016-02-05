@@ -1,0 +1,242 @@
+<HTML>
+  <HEAD>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+    <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (X11; I; Linux 2.0.30 i586) [Mentira]">
+    <META NAME="author" CONTENT="J.J. Merelo">
+    <META NAME="keywords" CONTENT="Class libraries, genetic algorithms, evolutionary computation, simulated annealing, evolution strategies, age GAs, C++">
+    <META NAME="resource-type" CONTENT="document">
+    <META NAME="generator" CONTENT="Sausage Software HotDog Professional 4">
+    <META NAME="distribution" CONTENT="Global">
+    <TITLE>EO Evolutionary Computation Framework</TITLE>
+    <STYLE TYPE="text/css">
+      H2 {
+      font-family: Helvetica,Arial;
+      color: #ffffcc;
+      background: #00309c;
+      }
+    </STYLE>
+  </HEAD>
+  <BODY TEXT="#00309C" BGCOLOR="#FFFFCC" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+    <CENTER><H1>EO Evolutionary Computation Framework</H1></CENTER>
+
+    <TABLE BORDER=0 CELLPADDING=5 COLS=3 WIDTH="100%" BGCOLOR="#FFFFCC" >
+      <TR>
+	<TD ALIGN=RIGHT VALIGN=TOP WIDTH="50" CLASS="TITLE">
+	  <H2>
+	    Download</H2>
+	</TD>
+
+	<TD BGCOLOR="#FFCC99">First of all, the sites <A HREF="http://geneura.ugr.es/~jmerelo/eo">http://geneura.ugr.es/~jmerelo/eo
+	  </A>for the documentation, <A HREF="ftp://geneura.ugr.es/pub/eo/eo-0.8.5.tgz">ftp://geneura.ugr.es/pub/eo/eo-0.8.5.tgz</A>
+	  or <A HREF="ftp://geneura.ugr.es/pub/eo/eo-0.8.5.zip">ftp://geneura.ugr.es/pub/eo/eo-0.8.5.zip</A>
+	  for the release. Latest release is 0.8.5, <a href="ftp://geneura.ugr.es/pub/eo/eo090798.zip">latest snapshot July 16 1999</a>. <B>We
+	    are still looking for mirrors!</B></TD>
+
+	<TD WIDTH="50"></TD>
+      </TR>
+
+      <TR>
+	<TD ALIGN=RIGHT VALIGN=TOP CLASS="TITLE">
+	  <H2>
+	    Features</H2>
+	</TD>
+
+	<TD BGCOLOR="#FFCC99">EO is a templates-based, ANSI-C++ compliant evolutionary
+	  computation library. It contains classes for any kind of evolutionary computation
+	  (specially genetic algorithms) you might come up to, except maybe genetic
+	  programming. It is component-based, so that if you don't
+	  find the class you need in it, it is very easy to subclass
+	  existing abstract or concrete class. Here are its features&nbsp;
+	  <UL>&nbsp;
+	    <LI>
+	      <B>Chromosomes</B>: Can be defined by the user, by subclassing the <TT>EOBase</TT>
+	      class; binary, floating point, bidimensional, string and
+	      value plus sigma, used in evolution strategies, are
+	      provided. All algorithms defined work on all kind of
+	      chromosomes.&nbsp;</LI> 
+
+	    <LI>
+	      <B>Genetic operators</B>: Can be defined by the user, by subclassing the
+	      <TT>EOOp class</TT>. Operators can be unary, binary or n-ary (orgy) operators.
+	      Many floating point, bitstring, and generic operators are defined, like
+	      mutation, crossover, and things like that.&nbsp;</LI>
+
+	    <LI>
+	      <B>Selection/elimination procedure</B>: Can be defined by the user, by
+	      subclassing the <TT>EOSelect</TT> class. Steady-State and rank-based are
+	      provided.&nbsp;</LI>
+
+	    <LI>
+	      <B>Reproduction procedure</B>: Can be user defined (I'll skip that from
+	      now on, but everything can be user-defined) by subclassing <TT>EOBreed</TT>.
+	      Random, lottery, and rank-based are provided.&nbsp;</LI>
+
+	     <LI>
+	      <B>Replacement procedure</B>: Can be defined by the user, by
+	      subclassing the <TT>EOReplace</TT> class. Eliminate-all, 
+	    eliminate-worst are provided</LI>
+
+	    <LI>
+	      <B>Termination conditions</B>: (user-definable) fitness and generation-based.&nbsp;</LI>
+
+	    <LI>
+	      <B>Algorithms</B>: Easy Ga, Goldberg's SimpleGA,
+	      Evolution Strageties and simulated annealing with user-definable
+	      cooling schedule.&nbsp;</LI>
+
+	    <LI>
+	      <B>Some utilities</B>: command-line parsing, random-number generations&nbsp;</LI>
+
+	    <LI>
+	      <B>Examples</B>: examples that test all features and classes, plus genetic mastermind.&nbsp;</LI>
+
+	    <LI>
+	      <B>User interface</B>: an example that uses gtk and
+	      another with Borland Builderis provided&nbsp;</LI>
+
+	    <LI>
+	      <A HREF="http://geneura.ugr.es/~jmerelo/eo">Documentation in html</A>.&nbsp;</LI>
+	  </UL>
+	  There is a <em>huge</em> PowerPoint presentation which shows the EO fphilosophy, and it includes a Visual Basic macro for evolving objects in Visual Basic for Applications. You can download it <a href=ftp://geneura.ugr.es/pub/jmerelo/eo_ppt.zip>from here</a>.
+	</TD>
+      </TR>
+
+      <TR>
+	<TD ALIGN=RIGHT VALIGN=TOP CLASS="TITLE">
+	  <H2>
+	    Platforms</H2>
+	</TD>
+
+	<TD BGCOLOR="#FFCC99">EO has been tested and works on the following platforms:&nbsp;
+	  <UL>
+	    <LI>
+	      Linux with egcs 1.0.2&nbsp;</LI>
+
+	    <LI>
+	      Irix 4.0 with egcs 1.0.2&nbsp;</LI>
+
+	    <LI>
+	      Solaris with egcs 1.0.2 and gcc 2.8.1&nbsp;</LI>
+
+	    <LI>
+	      Win95/NT with CygWin/egcs 1.0.2, VC++ 5.0 and Borland Builder. Makefiles and projects files
+	      are provided.&nbsp;</LI>
+	  </UL>
+	</TD>
+      </TR>
+
+<TR>
+	<TD ALIGN=RIGHT VALIGN=TOP CLASS="TITLE">
+	  <H2>
+	    Related Apps</H2>
+	</TD>
+
+	<TD BGCOLOR="#FFCC99"><a
+href=ftp://geneura.ugr.es/pub/eo/eo-0.8.4.zip>EO 0.8.4</a> has been
+embedded in an ActiveX control, called <font size+=1
+face="Helvetica,sans serif">DegaX</a> by 3 degree students. You can download it
+from <a href=ftp://geneura.ugr.es/pub/eo/DegaX>the DegaX
+directory</a>. It's better if you download it by parts:<ul>
+<li>Start by <a href=ftp://geneura.ugr.es/pub/eo/DegaX/DegaX-doc.zip>
+the documentation</A>, which is, as everthing else, in Spanish,
+explains how to decompress and use everything, and the evolutionary
+and Microsoftie basics. The documentation is also available from <a href=DegaX>here</a>.
+<li>Follow by downloading the  <a
+href=ftp://geneura.ugr.es/pub/eo/DegaX/DegaX-inst.zip>ActiveX
+control</a>, and install it. You'll need this to embed it in any
+application.
+<li>Several apps that use the ActiveX control are also there: in <a
+href=ftp://geneura.ugr.es/pub/eo/DegaX/DegaX-VB.zip>Visual Basic</a>, 
+in <a
+href=ftp://geneura.ugr.es/pub/eo/DegaX/DegaX-VC.zip> Visual C++</a>,
+and in <a
+href=ftp://geneura.ugr.es/pub/eo/DegaX/DegaX-xls.zip>Excel</a>.
+<li>Finally, if you feel like it, download the <a
+href=ftp://geneura.ugr.es/pub/eo/DegaX/DegaX-src.zip> sources for everything.
+
+</ul></TD>
+      </TR>
+
+      <TR>
+	<TD ALIGN=RIGHT VALIGN=TOP CLASS="TITLE">
+	  <H2>
+	    License</H2>
+	</TD>
+
+	<TD BGCOLOR="#FFCC99">Free, free distribution, but for commercial uses,
+	  check with us.&nbsp;</TD>
+      </TR>
+
+      <TR>
+	<TD ALIGN=RIGHT VALIGN=TOP CLASS="TITLE">
+	  <H2>
+	    Releases</H2>
+	</TD>
+
+	<TD BGCOLOR="#FFCC99">New releases are made very often. Check at
+	  the EO site.
+	  All daily snapshots are available from <A HREF="ftp://geneura.ugr.es/pub/eo">ftp://geneura.ugr.es/pub/eo</A>.<p>
+We have also set up remote CVS read access to the source tree. To get
+the version we are working in currently, first download a cvs client
+from <a href=http://www.cyclic.com>Cyclic</a> or from your closest GNU
+repository, and then do this:<br><small><code> 
+bash%export CVSROOT=:pserver:anon@geneura.ugr.es:/home/cvs
+</code></small><br>
+or<br><small><code>
+csh%setenv CVSROOT :pserver:anon@geneura.ugr.es:/home/cvs
+</code></small><br> and then<br>
+<small><code>
+$ cvs login<br>
+(Logging in to anon@geneura.ugr.es)<br>
+CVS password:</code></small> &lt;press enter here&gt;, and<br>
+<small><code>
+$ cvs -z9 checkout oldEO</code></small><br>
+, which will download all the code, compressed to the maximum. This
+will create the eo source tree; from them on, you can check changes,
+get daily updates, and so on. This will be much faster than
+downloading the whole zipfile, and besides, if you have made local
+changes, cvs will merge them with whatever changes we have made.
+</TD>
+      </TR>
+
+      <TR>
+	<TD ALIGN=RIGHT VALIGN=TOP CLASS="TITLE">
+	  <H2>
+	    Mailing List</H2>
+	</TD>
+
+	<TD BGCOLOR="#FFCC99">We would like EO to be an open development effort;
+	  that is why we have created a mailing list to discuss future developments,
+	  solve technical problems, announce releases, publish patches, and discuss
+	  evolutionary computation in general. Join the mailing list by&nbsp;
+	  <CENTER><A HREF="http://www.onelist.com/subscribe.cgi/eodev"><IMG SRC="http://www.onelist.com/join.gif" HEIGHT=36 WIDTH=72></A><A HREF="http://www.onelist.com/subscribe.cgi/eodev">&nbsp;</A></CENTER>
+
+	  <CENTER><A HREF="http://www.onelist.com/subscribe.cgi/eodev">clicking here.</A></CENTER>
+</TD>
+</TR>
+</TABLE>
+
+<HR>
+This page is also hosted by  <a
+href="http://fast.to/EO">InternetJump.com</a>, <a href="http://fast.to"><img src=http://www.internetjump.com/Jump.gif></a></P>
+Go ahead to the <A HREF="http://geneura.ugr.es/~jmerelo/README.html">README doc </A>or 
+
+<CENTER><FORM method="POST" ACTION="http://geneura.ugr.es/cgi-bin/jj/mysearch.pl">Search
+EO documentation&nbsp;
+<INPUT NAME="busca">
+<INPUT TYPE="submit" VALUE="Search">
+<INPUT type=hidden name=indexPath value="/home/jmerelo/index/eo.idx">
+<INPUT type=hidden name=origPath value="/home/jmerelo/public_html/eo">
+<INPUT type=hidden name=mappedPath value="http://geneura.ugr.es/~jmerelo/eo">
+<INPUT type=hidden name=pageTemplate value="/home/jmerelo/public_html/search_eo.html">
+</FORM></CENTER>
+
+<HR>
+<ADDRESS>
+<A HREF="mailto:eo@kal-el.ugr.es">Juan Julian Merelo Guervos</A></ADDRESS>
+
+<BR><!-- Created: Wed May 13 12:09:11 CEST 1998 --><!-- hhmts start -->Last
+modified: Thu Jul 10 13:50:03 CEST 1998&nbsp;<!-- hhmts end -->
+</BODY>
+</HTML>

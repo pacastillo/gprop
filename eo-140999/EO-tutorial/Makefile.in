@@ -1,0 +1,37 @@
+#This is changed by autoconf
+prefix=@prefix@
+CXX=@CXX@
+CFLAGS=@CFLAGS@
+
+CXXFLAGS= -I$(prefix) $(CFLAGS)
+
+#You shouldn't need to change this
+EXEC = EOtutorial-ex0 EOtutorial-ex1
+OBJECTS = SGA-getParams.o
+
+CFLAGS=-g -Wall
+CXXFLAGS= -I${prefix} $(CFLAGS)
+LDFLAGS= -L${prefix}/util
+LIBS=-lEOutil -lm
+CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)
+
+#Targets
+all: $(EXEC)
+
+.SUFFIXES: .S .c .cc .lo .o .s .cpp
+
+.cpp.o:
+	$(CXXCOMPILE) -c $<
+
+EOtutorial-ex0: EOtutorial-ex0.cpp $(OBJECTS)  Makefile
+	$(CXXCOMPILE) $< -o EOtutorial-ex0 $(OBJECTS) $(LIBS)
+
+EOtutorial-ex1: EOtutorial-ex1.cpp $(OBJECTS)  Makefile
+	$(CXXCOMPILE) $< -o EOtutorial-ex1 $(OBJECTS) $(LIBS)
+
+#Other targets
+clean: 
+	rm -f $(OBJECTS) $(EXEC) core
+
+zip: clean
+	cd ..;zip -r EO-tutorial-`date +"%m%d%y"`.zip EO-tutorial
